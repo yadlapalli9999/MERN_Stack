@@ -1,12 +1,28 @@
 
 import React from 'react';
-import '../styles/RegisterStyle.css'
-import { Button, Form, Input } from 'antd';
-import { Link } from 'react-router-dom';
+import '../styles/RegisterStyle.css';
+import axios from 'axios';
+import { Form, Input,message } from 'antd';
+import { Link,useNavigate } from 'react-router-dom';
 
 const Login = ()=>{
-    const onfinishHandler = (values)=>{
-        console.log(values)
+    let navigate = useNavigate();
+    const onfinishHandler = async(values)=>{
+        try{
+           const res = await axios.post('/api/v1/users/login',values);
+           if(res.data.success){
+            localStorage.setItem("token",res.data.token)
+              message.success('login successfully')
+              navigate('/')
+           }
+           else{
+            message.error(res.data.message)
+           }
+        }
+        catch(error){
+            console.log(error)
+            message.error('Something went wrong')
+        }
      }
     return(
         <div className='form-container'>
@@ -20,7 +36,7 @@ const Login = ()=>{
                     <Input type='password' required/>
                 </Form.Item>
                 <p>Don`t have an account <Link to="/register">here</Link></p>
-                <Button type='submit' className='btn btn-primary'>Login</Button>
+                <button type='submit' className='btn btn-primary'>Login</button>
             </Form>
          </div>
     )
